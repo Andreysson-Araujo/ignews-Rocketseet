@@ -1,0 +1,3 @@
+instalar tipagens do typescript
+intalar scss
+intale npm install react-icons
