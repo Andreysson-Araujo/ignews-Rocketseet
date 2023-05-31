@@ -1,3 +1,4 @@
 instalar tipagens do typescript
 intalar scss
 intale npm install react-icons
+use a chave de teste.
