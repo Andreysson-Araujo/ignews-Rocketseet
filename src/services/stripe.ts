@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { version } from "../../package.json";
+import packageJson from "../../package.json";
 
 const stripeApiKey = process.env.STRIPE_API_KEY;
 
@@ -11,6 +11,6 @@ export const stripe = new Stripe(stripeApiKey, {
   apiVersion: "2022-11-15",
   appInfo: {
     name: "Ignews",
-    version,
+    version: packageJson.version
   },
 });
