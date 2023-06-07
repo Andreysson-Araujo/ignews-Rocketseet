@@ -15,10 +15,11 @@ type User = {
   };
 };
 
+// A função getSession é utilizada para obter a sessão do usuario autenticado
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method == "POST") {
     const session = await getSession({ req });
-
+    // realiza uma consulta no Fauna Db para obter usuario da sessão
     const user = await fauna.query<User>(
       q.Get(
         q.Match(
@@ -29,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     );
 
     let customerId = user.data.stripe_customer_id;
-
+          // se o usuario não exisir vai ser inserido no fauna , passando o email e o usuario
     if (!customerId) {
       const stripeCustomer = await stripe.customers.create({
         email: session?.user?.email ?? "example@example.com",
@@ -50,6 +51,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const cancel_Url =
       process.env.STRIPE_CANCEL_URL || "http://localhost:3000/";
 
+      
+    // faz a checagem do usuario
     const stripeCheckoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ["card"],
@@ -60,7 +63,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       success_url: success_Url,
       cancel_url: cancel_Url,
     });
-
+    //Tratamento de metodos não permitidos
     return res.status(200).json({ sessionId: stripeCheckoutSession.id });
   } else {
     res.setHeader("Allow", "POST");
