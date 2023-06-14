@@ -4,3 +4,6 @@ intale npm install react-icons
 use a chave de teste.
 instale o faunadb no projeto
 instalar axios
+
+
+npx @slicemachine/init@latest --repository ignews396

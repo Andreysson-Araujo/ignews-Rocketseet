@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "slicemachine": "start-slicemachine"
   },
   "dependencies": {
+    "@prismicio/client": "^7.1.0",
+    "@prismicio/next": "^1.2.1",
+    "@prismicio/react": "^2.6.2",
     "@stripe/stripe-js": "^1.54.0",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",
@@ -27,9 +31,11 @@
     "tailwindcss": "3.3.2"
   },
   "devDependencies": {
+    "@slicemachine/adapter-next": "^0.3.0",
     "@types/next-auth": "^3.15.0",
     "@types/node": "^20.2.5",
     "@types/react": "^18.2.7",
+    "slice-machine-ui": "^1.2.0",
     "typescript": "^5.0.4"
   }
 }
