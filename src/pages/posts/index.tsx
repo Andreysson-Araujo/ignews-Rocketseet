@@ -34,7 +34,7 @@ export default function Posts() {
     );
 }
 
-export const getStaticProps: GetStaticProps = async  () => {
+/*export const getStaticProps: GetStaticProps = async  () => {
     const prismic = getPrismicClient()
 
     const response = await prismic.getByType([
@@ -47,3 +47,4 @@ export const getStaticProps: GetStaticProps = async  () => {
         props: {}
     }
 }
+*/
