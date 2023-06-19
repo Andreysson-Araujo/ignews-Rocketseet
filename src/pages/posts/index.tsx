@@ -3,8 +3,21 @@ import styles from "./styles.module.scss"
 import { GetStaticProps } from "next";
 import Prismic from "@prismicio/client";
 import { getPrismicClient } from "@/services/prismic";
+import { RichText } from "prismic-dom"
 
-export default function Posts() {
+
+type Post = {
+    slug: string;
+    title: string;
+    excerpt: string;
+    updatedAt: string;
+};
+
+interface PostProps {
+    posts: Post[]
+};
+
+export default function Posts({ posts }: PostProps) {
     return (
         <>
             <Head>
@@ -13,38 +26,53 @@ export default function Posts() {
 
             <main className={styles.container}>
                 <div className={styles.posts}>
-                    <a href="#">
-                        <time>14 outubro 2000</time>
-                        <strong>Creating a Monorepo & Yarn Workspace</strong>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.Pedit rem ab sunt sed quisquam, fugit optio qui nobis eaque!</p>
-                    </a>
-                    <a href="#">
-                        <time>14 outubro 2000</time>
-                        <strong>Creating a Monorepo & Yarn Workspace</strong>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.Pedit rem ab sunt sed quisquam, fugit optio qui nobis eaque!</p>
-                    </a>
-                    <a href="#">
-                        <time>14 outubro 2000</time>
-                        <strong>Creating a Monorepo & Yarn Workspace</strong>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.Pedit rem ab sunt sed quisquam, fugit optio qui nobis eaque!</p>
-                    </a>
+                    {posts.map((post) => (
+                        <a href="#" key={post.slug}>
+                            <time>{post.updatedAt}</time>
+                            <strong>{post.title}</strong>
+                            <p>{post.excerpt}</p>
+                        </a>
+                    ))}
                 </div>
             </main>
         </>
     );
 }
 
-/*export const getStaticProps: GetStaticProps = async  () => {
-    const prismic = getPrismicClient()
+//Chamada para api
+export const getStaticProps: GetStaticProps = async () => {
+    const prismic = getPrismicClient();
 
-    const response = await prismic.getByType([
-        Prismic.predicate.at("document.type", "publication")
-    ],{
+    const response = await prismic.getByType("publication", {
         fetch: ["publication.title", "publication.content"],
         pageSize: 100,
-    })
+    });
+
+    const posts = response.results.map((post) => {
+        const excerpt = post.data.content
+            .map((content) => {
+                if (content.type === "paragraph" && content.text) {
+                    return content.text;
+                }
+                return ""; // Retorna uma string vazia se o tipo não for "paragraph" ou não houver texto disponível
+            })
+            .join(""); // Junta todos os trechos de texto em uma única string
+
+        return {
+            slug: post.uid,
+            title: RichText.asText(post.data.title),
+            excerpt: excerpt,
+            updatedAt: new Date(post.last_publication_date).toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            })
+        };
+    });
+
     return {
-        props: {}
-    }
-}
-*/
+        props: {
+            posts,
+        },
+    };
+};
