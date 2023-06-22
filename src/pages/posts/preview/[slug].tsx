@@ -3,6 +3,10 @@ import { GetStaticProps } from "next";
 import { RichText } from "prismic-dom";
 import Head from "next/head";
 import styles from "../post.module.scss";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 interface PostPreviewProps {
   post: {
@@ -14,6 +18,16 @@ interface PostPreviewProps {
 }
 
 export default function PostPreview({ post }: PostPreviewProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session) {
+      router.replace(`/post/${post.slug}`);
+      console.log("Executando session")
+    }
+  }, [session, post.slug, router]);
+
   return (
     <>
       <Head>
@@ -25,9 +39,16 @@ export default function PostPreview({ post }: PostPreviewProps) {
           <h1>{post.title}</h1>
           <time>{post.updatedAt}</time>
           <div
-            className={styles.postContent}
+            className={`${styles.postContent} ${styles.previewContent}`}
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
+
+          <div className={styles.continueReading}>
+            Wanna continue reading?
+            <Link href="/" legacyBehavior>
+              <a href="">Subscribe Now 🤗</a>
+            </Link>
+          </div>
         </article>
       </main>
     </>
@@ -36,19 +57,23 @@ export default function PostPreview({ post }: PostPreviewProps) {
 
 export const getStaticPaths = () => {
   return {
-    paths:[]
-  }
-}
+    paths: [],
+    fallback: "blocking",
+  };
+};
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const prismic = getPrismicClient();
+  //const {slug} = params || {}
+
+  
+  const prismic = getPrismicClient({});
 
   const response = await prismic.getByUID("publication", String(params?.slug), {});
 
   const post = {
     slug: String(params?.slug),
     title: RichText.asText(response.data.title),
-    content: RichText.asHtml(response.data.content),
+    content: RichText.asHtml(response.data.content.splice(0, 3)),
     updatedAt: new Date(response.last_publication_date).toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "long",
