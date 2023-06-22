@@ -31,6 +31,7 @@ export function SubscribeButton({priceId}: SubscribeButtonProps) {
         alert("opa")
        }
     }
+    
 
     return (
         <button

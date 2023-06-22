@@ -4,7 +4,7 @@ import { Readable } from "stream";
 import Stripe from "stripe";
 import { saveSubscription } from "./_lib/manageSubscription";
 
-// A função buffer recebe o objeto Readable e retorna uma promisse
+// A função buffer recebe o objeto Readable e retorna uma promessa
 async function buffer(readable: Readable) {
   const chunks = [];
 
@@ -15,7 +15,7 @@ async function buffer(readable: Readable) {
   return Buffer.concat(chunks);
 }
 
-// configuração para a Api do next
+// Configuração para a API do Next
 export const config = {
   api: {
     bodyParser: false,
@@ -28,8 +28,8 @@ const relevantEvents = new Set([
   "customer.subscription.deleted",
 ]);
 
-//eventos relevantes que seram tratados no caso é adicionado uma VARIAVEL que sera usada para verificar se o evento é relevante ou não
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+// Eventos relevantes que serão tratados
+const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const buf = await buffer(req);
     const secret = req.headers["stripe-signature"] as string;
@@ -87,3 +87,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 };
+
+export default webhookHandler;
